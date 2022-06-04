@@ -54,7 +54,7 @@ def remove_possibility_line(grid, row, column, value):
                 grid[i][column].remove(value)
                 if len(grid[i][column]) == 1:
                     new_single_value_cells.append((i, column))
-    
+
     return new_single_value_cells
 
 
@@ -64,13 +64,14 @@ def remove_possibility_square(grid, row, column, value):
         for j in range(column - column % size, column - column % size + size):
             if i == row and j == column:
                 continue
-            
+
             if value in grid[i][j]:
                 grid[i][j].remove(value)
                 if len(grid[i][j]) == 1:
                     new_single_value_cells.append((i, j))
 
     return new_single_value_cells
+
 
 def min_entropy_cells(grid):
     """Selects the indices (i, j) of the cells with the fewest possibilities (lowest entropy)."""
@@ -94,7 +95,6 @@ def observe_cell(grid, position=None):
         # Select a cell with the fewest possibilities at random
         cells_with_min_possibilities = min_entropy_cells(grid)
         i, j = random.choice(cells_with_min_possibilities)
-
 
     # Select a random value from the cell
     value = random.choice(grid[i][j])
@@ -177,14 +177,13 @@ def generate_solved_puzzle(initial_grid=None, seed=None, max_allowed_contradicti
             if condtradiction_count < max_allowed_contradictions:
                 grid = previous_grid
                 continue
-            
+
             if display:
                 print("Contradiction:")
                 display_grid(grid)
                 print("No solution found.")
                 display_grid_possibilities(grid)
             return grid
-
 
 
 def is_contradiction(grid):
@@ -212,6 +211,7 @@ if __name__ == "__main__":
     end = timeit.default_timer()
 
     status = "Found solution" if is_solved(puzzle) else "Contradiction"
-    tries_description = "in {} tries".format(tries) if tries > 1 else "in 1 try"
+    tries_description = "in {} tries".format(
+        tries) if tries > 1 else "in 1 try"
     print(f"Puzzle: {status} in {end - start:.2f} seconds {tries_description}")
     display_grid(puzzle)
