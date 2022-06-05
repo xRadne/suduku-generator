@@ -10,11 +10,11 @@ def grid_size():
     return size*size
 
 
-def display_grid(grid):
+def display_grid(grid: list[list[set]]):
     for i in range(grid_size()):
         for j in range(grid_size()):
             if len(grid[i][j]) == 1:
-                print(grid[i][j][0], end=" ")
+                print(grid[i][j].pop(), end=" ")
             else:
                 print("x", end=" ")
 
@@ -26,7 +26,7 @@ def display_grid(grid):
         print()
 
 
-def display_grid_possibilities(grid):
+def display_grid_possibilities(grid: list[list[set]]):
     for i in range(grid_size()):
         for j in range(grid_size()):
             print(len(grid[i][j]), end=" ")
@@ -39,7 +39,7 @@ def display_grid_possibilities(grid):
         print()
 
 
-def remove_possibility_line(grid, row, column, value):
+def remove_possibility_line(grid: list[list[set]], row, column, value):
     new_single_value_cells = []
     for i in range(grid_size()):
         if i != column:
@@ -58,7 +58,7 @@ def remove_possibility_line(grid, row, column, value):
     return new_single_value_cells
 
 
-def remove_possibility_square(grid, row, column, value):
+def remove_possibility_square(grid: list[list[set]], row, column, value):
     new_single_value_cells = []
     for i in range(row - row % size, row - row % size + size):
         for j in range(column - column % size, column - column % size + size):
@@ -73,7 +73,7 @@ def remove_possibility_square(grid, row, column, value):
     return new_single_value_cells
 
 
-def min_entropy_cells(grid):
+def min_entropy_cells(grid: list[list[set]]):
     """Selects the indices (i, j) of the cells with the fewest possibilities (lowest entropy)."""
     min_possibilities = grid_size()
 
@@ -88,7 +88,7 @@ def min_entropy_cells(grid):
     return cells_with_min_possibilities
 
 
-def observe_cell(grid, position=None):
+def observe_cell(grid: list[list[set]], position = None):
     if position is not None:
         i, j = position
     else:
@@ -97,8 +97,8 @@ def observe_cell(grid, position=None):
         i, j = random.choice(cells_with_min_possibilities)
 
     # Select a random value from the cell
-    value = random.choice(grid[i][j])
-    grid[i][j] = [value]
+    value = random.choice(list(grid[i][j]))
+    grid[i][j] = {value}
 
     new_single_value_cells = []
 
@@ -118,15 +118,15 @@ def observe_cell(grid, position=None):
 
 
 def generate_initial_grid():
-    return [[[v for v in range(1, grid_size()+1)]
+    return [[{v for v in range(1, grid_size()+1)}
              for x in range(grid_size())] for y in range(grid_size())]
 
 
-def deep_copy(grid):
-    return [[grid[i][j][:] for j in range(grid_size())] for i in range(grid_size())]
+def deep_copy(grid: list[list[set]]):
+    return [[grid[i][j].copy() for j in range(grid_size())] for i in range(grid_size())]
 
 
-def generate_solved_puzzle(initial_grid=None, seed=None, max_allowed_contradictions=100, display=False, wait_time=0.01, wait_for_input=False):
+def generate_solved_puzzle(initial_grid: list[list[set]] = None, seed = None, max_allowed_contradictions=100, display=False, wait_time=0.01, wait_for_input=False):
     grid = initial_grid
     if initial_grid is None:
         grid = generate_initial_grid()
@@ -186,13 +186,13 @@ def generate_solved_puzzle(initial_grid=None, seed=None, max_allowed_contradicti
             return grid
 
 
-def is_contradiction(grid):
+def is_contradiction(grid: list[list[set]]):
     if grid is None:
         return True
     return any(len(grid[i][j]) < 1 for i in range(grid_size()) for j in range(grid_size()))
 
 
-def is_solved(grid):
+def is_solved(grid: list[list[set]]):
     if grid is None:
         return False
     return all(len(grid[i][j]) == 1 for i in range(grid_size()) for j in range(grid_size()))
@@ -213,5 +213,5 @@ if __name__ == "__main__":
     status = "Found solution" if is_solved(puzzle) else "Contradiction"
     tries_description = "in {} tries".format(
         tries) if tries > 1 else "in 1 try"
-    print(f"Puzzle: {status} in {end - start:.2f} seconds {tries_description}")
+    print(f"Puzzle: {status} in {end - start:.3f} seconds {tries_description}")
     display_grid(puzzle)
