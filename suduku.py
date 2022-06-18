@@ -88,7 +88,7 @@ def min_entropy_cells(grid: list[list[set]]):
     return cells_with_min_possibilities
 
 
-def observe_cell(grid: list[list[set]], position = None):
+def observe_cell(grid: list[list[set]], position=None):
     if position is not None:
         i, j = position
     else:
@@ -126,12 +126,22 @@ def deep_copy(grid: list[list[set]]):
     return [[grid[i][j].copy() for j in range(grid_size())] for i in range(grid_size())]
 
 
-def generate_solved_puzzle(initial_grid: list[list[set]] = None, seed = None, max_allowed_contradictions=100, display=False, wait_time=0.01, wait_for_input=False):
-    grid = initial_grid
+def generate_solved_puzzle(initial_grid: list[list[set]] = None, seed=None, max_allowed_contradictions=100, display=False, wait_time=0.01, wait_for_input=False):
     if initial_grid is None:
         grid = generate_initial_grid()
+    elif is_contradiction(initial_grid):
+        return None
+    elif is_solved(initial_grid):
+        return initial_grid
+    else:
+        grid = deep_copy(initial_grid)
+        for i in range(len(grid)):
+            for j in range(len(grid)):
+                if (len(grid[i][j]) == 1):
+                    remove_possibility_line(grid, i, j, list(grid[i][j])[0])
+                    remove_possibility_square(grid, i, j, list(grid[i][j])[0])
 
-    if isinstance(seed, int):
+    if seed is not None:
         random.seed(seed)
 
     # Randomly remove possible values from the grid
@@ -210,7 +220,7 @@ if __name__ == "__main__":
             break
     end = timeit.default_timer()
 
-    status = "Found solution" if is_solved(puzzle) else "Contradiction"
+    status = "Found solution" if is_solved(puzzle) else "Did not find solution"
     tries_description = "in {} tries".format(
         tries) if tries > 1 else "in 1 try"
     print(f"Puzzle: {status} in {end - start:.3f} seconds {tries_description}")
