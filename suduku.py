@@ -14,7 +14,7 @@ def display_grid(grid: list[list[set]]):
     for i in range(grid_size()):
         for j in range(grid_size()):
             if len(grid[i][j]) == 1:
-                print(grid[i][j].pop(), end=" ")
+                print(list(grid[i][j])[0], end=" ")
             else:
                 print("x", end=" ")
 
